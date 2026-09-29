@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Chat Viewer</title>
+    <meta name="description" content="Upload and view your WhatsApp chat exports in a beautiful, authentic WhatsApp-style interface.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+    <!-- Upload Screen -->
+    <div id="upload-screen" class="screen active">
+        <div class="upload-container">
+            <div class="app-branding">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#5afa89"/>
+                                <stop offset="100%" stop-color="#07b34a"/>
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="blur"/>
+                                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                            </filter>
+                        </defs>
+                        <circle cx="40" cy="40" r="38" fill="url(#grad1)" filter="url(#glow)"/>
+                        <g transform="translate(16, 14)" fill="white">
+                            <path d="M24 0C10.7 0 0 10.3 0 23.1c0 4.1 1.1 8 3 11.4L0 48l13.9-3.6c3.3 1.8 7 2.8 10.9 2.8h0c13.3 0 24.2-10.3 24.2-23.1S37.3 0 24 0zm0 42.3c-3.5 0-6.9-1-9.9-2.8l-0.7-0.4-7.3 1.9 2-7.1-0.5-0.7c-2-3.2-3.1-6.9-3.1-10.8C4.5 12.8 13.2 4.5 24 4.5c5.2 0 10.1 2 13.8 5.6 3.7 3.6 5.7 8.4 5.7 13.5C43.5 33.7 34.8 42.3 24 42.3z"/>
+                            <path d="M35 28.3c-0.6-0.3-3.5-1.7-4.1-1.9-0.5-0.2-0.9-0.3-1.3 0.3-0.4 0.6-1.5 1.9-1.9 2.3-0.3 0.4-0.7 0.4-1.3 0.2-0.6-0.3-2.5-0.9-4.7-2.9-1.7-1.6-2.9-3.5-3.2-4.1-0.3-0.6 0-0.9 0.3-1.2 0.2-0.3 0.6-0.7 0.8-1 0.3-0.3 0.3-0.6 0.5-1 0.2-0.4 0.1-0.7 0-1-0.1-0.3-1.3-3.1-1.8-4.3-0.5-1.1-1-1-1.3-1h-1.1c-0.4 0-1 0.1-1.5 0.7-0.5 0.6-2 1.9-2 4.7s2.1 5.5 2.3 5.8c0.3 0.4 4.1 6.3 9.9 8.8 1.4 0.6 2.5 0.9 3.3 1.2 1.4 0.4 2.7 0.4 3.7 0.2 1.1-0.2 3.5-1.4 4-2.8 0.5-1.4 0.5-2.5 0.3-2.8C35.9 28.7 35.5 28.5 35 28.3z"/>
+                        </g>
+                    </svg>
+                </div>
+                <h1>WhatsApp Chat Viewer</h1>
+                <p class="subtitle">Upload your exported chat and relive your conversations</p>
+            </div>
+
+            <div id="drop-zone" class="drop-zone">
+                <div class="drop-zone-content">
+                    <div class="upload-icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </div>
+                    <h3>Drop your chat file here</h3>
+                    <p>or click to browse</p>
+                    <span class="file-hint">Supports .txt and .zip WhatsApp chat exports</span>
+                </div>
+                <input type="file" id="file-input" accept=".txt,.zip" hidden>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h4>100% Private</h4>
+                    <p>Everything runs locally in your browser. No data is uploaded anywhere.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h4>Authentic Look</h4>
+                    <p>Messages displayed in the real WhatsApp style with bubbles and timestamps.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h4>Search & Filter</h4>
+                    <p>Quickly find any message with instant search across your entire chat.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Screen -->
+    <div id="chat-screen" class="screen">
+        <div class="chat-wrapper">
+            <!-- Sidebar -->
+            <div id="sidebar" class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Chats</h2>
+                    <button id="new-upload-btn" class="icon-btn" title="Upload new chat">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="sidebar-search">
+                    <div class="search-input-wrapper">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <input type="text" id="search-input" placeholder="Search messages..." autocomplete="off">
+                    </div>
+                </div>
+                <div id="chat-info" class="chat-info-panel"></div>
+                <div id="participants-list" class="participants-list"></div>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="chat-main">
+                <div class="chat-header" id="chat-header">
+                    <button id="sidebar-toggle" class="icon-btn sidebar-toggle">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <line x1="3" y1="18" x2="21" y2="18"/>
+                        </svg>
+                    </button>
+                    <div class="header-avatar" id="header-avatar">
+                        <span id="header-avatar-letter">G</span>
+                    </div>
+                    <div class="header-info">
+                        <h3 id="chat-title">Chat</h3>
+                        <p id="chat-subtitle"></p>
+                    </div>
+                    <div class="header-actions">
+                        <button id="scroll-bottom-btn" class="icon-btn" title="Scroll to bottom" style="display:none;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+                        <button id="stats-btn" class="icon-btn" title="Chat statistics">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="20" x2="18" y2="10"/>
+                                <line x1="12" y1="20" x2="12" y2="4"/>
+                                <line x1="6" y1="20" x2="6" y2="14"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-body" id="chat-body">
+                    <div class="chat-bg-pattern"></div>
+                    <div id="messages-container" class="messages-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div id="stats-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Chat Statistics</h2>
+                <button id="close-stats" class="icon-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="stats-content" class="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="parser.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
